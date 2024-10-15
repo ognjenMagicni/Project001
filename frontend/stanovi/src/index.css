@@ -1,0 +1,175 @@
+:root{
+  --dot:10px;
+}
+* {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+}
+
+#mainDiv{
+  display:flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#a{
+  margin:90px;
+  background-color: blanchedalmond;
+  border-radius: 100px;
+  box-shadow: 0px 0px 15px 15px gainsboro;
+  padding: 50px;
+  box-sizing: border-box;
+}
+
+.flexColumn{
+  display: flex;
+  flex-direction: column;
+}
+
+.flexRow{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+#b{
+  margin:90px;
+  background-color: blanchedalmond;
+  border-radius: 100px;
+  box-shadow: 0px 0px 15px 15px gainsboro;
+  padding:30px;
+  overflow-y: scroll;
+}
+
+.element{
+  display:flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+  border:2px solid tomato;
+  border-radius: 5px;
+  margin-bottom: 10px;
+}
+
+.inputField{
+  margin-bottom: 10px;
+}
+
+#mainDiv1{
+  height:100vh;
+  width:100vw;
+  display:flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+#map{
+  height:80vh;
+  width:80vw;
+  background-color: cadetblue;
+  position:relative;
+}
+#map_price{
+  display:flex;
+  flex-direction: row;
+}
+.el{
+  position:absolute;
+  height:var(--dot);
+  width:var(--dot);
+  border-radius: var(--dot);
+  background-color: red;
+}
+
+#square{
+  display:flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width:80vw;
+}
+
+#price{
+  display:flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height:80vh;
+}
+
+#removeButton{
+  position: fixed;
+  height:30px;
+  width:80px;
+  background-color:red;
+  color:white;
+  top:0px;
+  left:0px;
+}
+
+.button {
+  background: #FF4742;
+  border: 1px solid #FF4742;
+  border-radius: 6px;
+  box-shadow: rgba(0, 0, 0, 0.1) 1px 2px 4px;
+  box-sizing: border-box;
+  color: #FFFFFF;
+  cursor: pointer;
+  display: inline-block;
+  font-family: nunito,roboto,proxima-nova,"proxima nova",sans-serif;
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 16px;
+  min-height: 40px;
+  outline: 0;
+  padding: 12px 14px;
+  text-align: center;
+  text-rendering: geometricprecision;
+  text-transform: none;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  vertical-align: middle;
+}
+
+.button:hover,
+.button:active {
+  background-color: initial;
+  background-position: 0 0;
+  color: #FF4742;
+}
+.button:active {
+  opacity: .5;
+}
+
+
+@media(max-width:600px){
+  #mainDiv{
+      flex-direction: column;
+      height:none;
+      width:none;
+  }
+  #a{
+    margin:30px;
+    padding:30px;
+    border-radius: 15px;
+  }
+  #b{
+    margin:30px;
+    padding:30px;
+    border-radius: 15px;
+    height:500px;
+    
+  }
+  .flexRow{
+    flex-direction: column;
+  }
+  
+  .inputField > select,input{
+    height:30px;
+  }
+
+
+}

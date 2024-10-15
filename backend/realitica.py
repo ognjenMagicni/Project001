@@ -1,5 +1,7 @@
 from scrap import Init, By
 import time
+from graph import drawGraph
+import pymysql
 
 ###CONSTANTS
 global undefined
@@ -40,13 +42,21 @@ Garage = 'Garage'
 
 
 ###Variables 
-pages = 5
-cityFilter = [Podgorica,Podgorica_Okolina]
-propertyFilter = [Apartment]
+pages = 20
+cityFilter = []
+propertyFilter = []
 minPrice = 25000
 maxPrice = 75000
+title = ''
+description = ''
+
 global globalPropertyInfo
 globalPropertyInfo = []
+
+minPriceLog = 100000000
+maxPriceLog = 0
+minSquareLog = 3000
+maxSquareLog = 0
 
 driver, action = Init("https://www.realitica.com/nekretnine/Crna-Gora/")
 
@@ -96,20 +106,34 @@ def clickSearch():
     button = driver.find_element(By.TAG_NAME,"button")
     action.click(button).perform()
 
+def upgradeConfiguration(priceList):
+    global minPriceLog
+    global maxPriceLog
+    global minSquareLog
+    global maxSquareLog
+    if priceList[1]<minSquareLog and priceList[1]!=-99:
+        minSquareLog = priceList[1]
+    if priceList[1]>maxSquareLog and priceList[1]!=-99:
+        maxSquareLog = priceList[1]
+    if priceList[2]<minPriceLog and priceList[2]!=-99:
+        minPriceLog = priceList[2]
+    if priceList[2]>maxPriceLog and priceList[2]!=-99:
+        maxPriceLog = priceList[2]
+
+
 def getSpecificInfoProperty(price,location):
-        priceList = []
+        priceList = [undefined,undefined,undefined]
         locationList = []
 
         priceInfo = price.split(",")
-        priceList.append(string_to_int(priceInfo[0]))
-        if len(priceInfo)>1:
-            priceList.append(string_to_int(priceInfo[1])//10)
-        else:
-            priceList.append(undefined)
-        if len(priceInfo)>2:
-            priceList.append(string_to_int(priceInfo[2]))
-        else:
-            priceList.append(undefined)
+
+        for word in priceInfo:
+            if "sobe" in word:
+                priceList[0]=string_to_int(word)
+            if "m" in word:
+                priceList[1]=string_to_int(word)//10
+            if "€" in word:
+                priceList[2]=string_to_int(word)
 
         locationInfo = location.split(",")
         locationList.append((locationInfo[0]))
@@ -131,11 +155,19 @@ def gatherProperties():
     all = div.find_elements(By.TAG_NAME,"div")
     
     while True:
-        if startingDiv==45:
-            startingDiv+=2
-        print(startingDiv)
+        
 
         property = all[startingDiv]
+
+        if property.get_attribute("class")=="responsive_left_LB":
+            startingDiv+=2
+
+        property = all[startingDiv]
+
+        if not "padding: 15px 10px" in property.get_attribute("style"):
+            break
+        link = property.find_element(By.TAG_NAME,"a").get_attribute("href")
+
         infoProperty = property.find_elements(By.TAG_NAME,"div")[2]
         
         stringInfoProperty = infoProperty.text.split("\n")
@@ -144,7 +176,9 @@ def gatherProperties():
 
         priceList,locationList = getSpecificInfoProperty(price,location)
 
-        globalPropertyInfo.append([priceList,locationList])
+        upgradeConfiguration(priceList)
+
+        globalPropertyInfo.append([priceList,locationList,link])
 
         startingDiv+=addDiv
         if startingDiv >83:
@@ -155,18 +189,53 @@ def nextPage():
     action.click(orientationButtons[len(orientationButtons)-1]).perform()
 
 
+def run():
+    functionCityFilter(cityFilter)
+    functionPriceFilter(minPrice,maxPrice)
+    functionProperyFilter(propertyFilter)
+    clickSearch()
 
-functionCityFilter(cityFilter)
-functionPriceFilter(minPrice,maxPrice)
-functionProperyFilter(propertyFilter)
-clickSearch()
+    for i in range(pages):
+        gatherProperties()
+        try:
+            buttons = driver.find_elements(By.CLASS_NAME,"bt_pages_ghost")
+            if len(buttons)==4:
+                break
+            if i==0:
+                raise Exception
+            driver.find_element(By.CLASS_NAME,"bt_pages_ghost")
+            break
+        except(Exception):
+            pass
+        nextPage()
 
-for i in range(pages):
-    gatherProperties()
-    nextPage()
 
-print(len(globalPropertyInfo))
-print(globalPropertyInfo)
 
-time.sleep(100)
-driver.quit()
+    conn = pymysql.connect(host = "localhost", user="root", password="Laptop1*", database="properties" )
+
+    try:
+        global title
+        global description
+        cursor = conn.cursor()
+        query = "INSERT INTO properties.search(price_min,price_max,square_min,Square_max,date,title,description) VALUES(%s,%s,%s,%s,CURDATE(),%s,%s)"
+        values = (minPriceLog,maxPriceLog,minSquareLog,maxSquareLog,title,description)
+        cursor.execute(query,values)
+        conn.commit()
+        id = cursor.lastrowid
+
+        for property in globalPropertyInfo:
+            query = "INSERT INTO properties.property(fk_search,no_room,square,price,location,city,country,link,on_off) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+            values = (id,property[0][0],property[0][1],property[0][2],property[1][0],property[1][1],property[1][2],property[2],1)
+            cursor.execute(query,values)
+            conn.commit()
+
+    except pymysql.MySQLError as e:
+        print(f"Error: {e}")
+        conn.rollback()
+
+    print(len(globalPropertyInfo))
+    print(globalPropertyInfo)
+    #drawGraph(globalPropertyInfo)
+
+    #time.sleep(1000) 
+    driver.quit()
