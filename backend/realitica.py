@@ -2,6 +2,7 @@ from scrap import Init, By
 import time
 from graph import drawGraph
 import pymysql
+import json
 
 ###CONSTANTS
 global undefined
@@ -42,13 +43,14 @@ Garage = 'Garage'
 
 
 ###Variables 
-pages = 20
-cityFilter = []
-propertyFilter = []
-minPrice = 25000
-maxPrice = 75000
+pages = 1000
+cityFilter = [Podgorica]
+propertyFilter = [Apartment]
+minPrice = 20000
+maxPrice = 5000000
 title = ''
 description = ''
+fileJSONL = 'jsonFolder/file.jsonl'
 
 global globalPropertyInfo
 globalPropertyInfo = []
@@ -147,13 +149,46 @@ def getSpecificInfoProperty(price,location):
             locationList.append(undefined)
 
         return priceList,locationList
-        
+
+def writeDataJSONL(data,file):
+    json.dump(data,file,ensure_ascii=False)
+    file.write('\n')
+
+def preprocessSearchInformation(propertyInfoList):
+
+    Rooms = propertyInfoList[0][0]
+    Square_metres = propertyInfoList[0][1]
+    Full_price = propertyInfoList[0][2]
+    location = propertyInfoList[1][0]
+    city = propertyInfoList[1][1]
+    country = propertyInfoList[1][2]
+    link = propertyInfoList[2]
+
+    propertyDictionary = {
+        "location":location,
+        "city":city,
+        "country":country,
+        "Full price":Full_price,
+        "Square metres":Square_metres,
+        "Rooms":Rooms,
+        "square Price":int(Full_price/Square_metres),
+        "link":link
+    }
+
+    return propertyDictionary
+
+def proccesAndJsonl(propertyInfoList,file):
+    propertyDictionary = preprocessSearchInformation(propertyInfoList)
+    writeDataJSONL(propertyDictionary,file)
+
 def gatherProperties():
     startingDiv = 5
     addDiv = 4
     div = driver.find_element(By.ID,"left_column_holder")
     all = div.find_elements(By.TAG_NAME,"div")
     
+    file = open(fileJSONL,'a',encoding='utf-8')
+
     while True:
         
 
@@ -180,9 +215,12 @@ def gatherProperties():
 
         globalPropertyInfo.append([priceList,locationList,link])
 
+        proccesAndJsonl([priceList,locationList,link],file)
+
         startingDiv+=addDiv
         if startingDiv >83:
             break
+    file.close()
 
 def nextPage():
     orientationButtons = driver.find_elements(By.CLASS_NAME,"bt_pages")
@@ -239,3 +277,4 @@ def run():
 
     #time.sleep(1000) 
     driver.quit()
+run()
