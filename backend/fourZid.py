@@ -1,16 +1,52 @@
-import selenium
+import sys
+sys.path.insert(0,r'C:\Users\Asus\Desktop\Ognjen\Programiranje\Python\Skripte\biblioteke')
+
 import scrap
 from scrap import By,XpathAnd,repeatUntilSuccess
 import time
 import json
 import pymysql
+from process import zidProcessData
+
+Beograd = 'Beograd'
+Bor = 'Bor'
+Valjevo = 'Valjevo'
+Vranje = 'Vranje'
+Vršac = 'Vršac'
+Zaječar = 'Zaječar'
+Zrenjanin = 'Zrenjanin'
+Jagodina = 'Jagodina'
+Kikinda = 'Kikinda'
+Kragujevac = 'Kragujevac'
+Kraljevo = 'Kraljevo'
+Kruševac = 'Kruševac'
+Leskovac = 'Leskovac'
+Loznica = 'Loznica'
+Niš = 'Niš'
+Novi_Pazar = 'Novi Pazar'
+Novi_Sad = 'Novi Sad'
+Pančevo = 'Pančevo'
+Pirot = 'Pirot'
+Požarevac = 'Požarevac'
+Priština = 'Priština'
+Prokuplje = 'Prokuplje'
+Smederevo = 'Smederevo'
+Sombor = 'Sombor'
+Sremska_Mitrovica = 'Sremska Mitrovica'
+Subotica = 'Subotica'
+Užice = 'Užice'
+Čačak = 'Čačak'
+Šabac = 'Šabac'
 
 ###VARIABLES
-CITY = 'Novi Sad'
+CITY = Beograd
 MinPrice = 20000
 MaxPrice = 5000000
 MinSquare, MaxSquare = 10,500
-jsonFile = 'jsonFolder/file1.jsonl'
+jsonFile = 'jsonFolder/file2.jsonl'
+TITLE = 'Naslov'
+DESCRIPTION = 'Dio nekretnina u Novom Sadu'
+PAGES = 2
 
 driver, action = scrap.Init("https://www.4zida.rs/prodaja-stanova")
             
@@ -65,10 +101,10 @@ def processPrice_Process(fullPrice,squarePrice):
         fullPriceTokens = None
         squarePriceTokens = None
     else:
-        fullPriceTokens = int(float(fullPrice.split('&')[0])*1000)
-        squarePriceTokens = int(float(squarePrice.split("&")[0])*1000)
+        fullPriceTokens = int(float(fullPrice.split('&')[0].replace('.', '')))
+        squarePriceTokens = int(float(squarePrice.split("&")[0].replace('.', '')))
     
-    price = {"Full price":fullPriceTokens,"square Price":squarePriceTokens}
+    price = {"full price":fullPriceTokens,"square price":squarePriceTokens}
     
     return price
 
@@ -77,7 +113,7 @@ def processSquareRoom_Process(squareRoom):
     squareRoomTokens[0] = int(squareRoomTokens[0].split("m")[0])
     squareRoomTokens[1] = float(squareRoomTokens[1].split(" ")[0])
     
-    squareRoom = {"Square metres":squareRoomTokens[0],"Rooms":squareRoomTokens[1]}
+    squareRoom = {"square metres":squareRoomTokens[0],"rooms":squareRoomTokens[1]}
     return squareRoom
 
 def processSearchInformation_Process(locationFirst,locationSecond,fullPrice,squarePrice,squareRoom):
@@ -107,7 +143,7 @@ def preprocessSearchInformation_Process(locationPrice,squareRoomLink):    #p -> 
     else:
         result = processSearchInformation_Process(argument1[0],argument1[1],argument1[2],None,argument2[0])
     
-    result.update({'Link':argument2[1]})
+    result.update({'link':argument2[1],'country':'Serbia'})
 
     return result
 
@@ -115,42 +151,46 @@ def writeDataJSONL_Process(data,file):
     json.dump(data,file,ensure_ascii=False)
     file.write('\n')
     
-def writeDatabase():
+def writeDatabase(listEstates,id_search):
+    pass
     conn = pymysql.connect(host = "localhost", user="root", password="Laptop1*", database="properties" )
 
     try:
-        title = "title"
-        description = 'description'
         cursor = conn.cursor()
-        query = "INSERT INTO properties.search(price_min,price_max,square_min,Square_max,date,title,description) VALUES(%s,%s,%s,%s,CURDATE(),%s,%s)"
-        values = (MinPrice,MaxPrice,MinSquare,MaxSquare,title,description)
-        cursor.execute(query,values)
-        conn.commit()
-        id = cursor.lastrowid
 
-        for property in globalPropertyInfo:
-            query = "INSERT INTO properties.property(fk_search,no_room,square,price,location,city,country,link,on_off) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s)"
-            values = (id,property[0][0],property[0][1],property[0][2],property[1][0],property[1][1],property[1][2],property[2],1)
+        for property in listEstates:
+            query = "INSERT INTO properties.property(fk_search,no_room,square,price,country,link,on_off,square_price) VALUES(%s,%s,%s,%s,%s,%s,%s,%s)"
+            values = (id_search,property['rooms'],property['square metres'],property['full price'],property['country'],property['link'],1,property['square price'])
             cursor.execute(query,values)
             conn.commit()
+            idProperty = cursor.lastrowid
+
+            for location in property['location']:
+                query = "INSERT INTO properties.settlements4zid(fk_property,settlement) VALUES(%s,%s)"
+                values = (idProperty,location)
+                cursor.execute(query,values)
+                conn.commit()
 
     except pymysql.MySQLError as e:
         print(f"Error: {e}")
         conn.rollback()
 
 
-def pickUpAllProperties():
+def pickUpAllProperties(id_search):
     file = open(jsonFile,'a',encoding='utf-8')
     estates = driver.find_elements(By.XPATH,XpathAnd("flex w-2/3 flex-col justify-between py-2"))
     
+    listEstates = []
+
     for e in estates:
         p = e.find_elements(By.TAG_NAME,"p")    #ovo vraca ['Klisa'   'Gradska lokacija,novi sad'  84000    2000]
         a = e.find_elements(By.TAG_NAME,"a")                #[neka glupost         63m2,1.5 soba]
         
         estate = preprocessSearchInformation_Process(p,a)
+        listEstates.append(estate)
         writeDataJSONL_Process(estate,file)
 
-    writeDatabase():
+    writeDatabase(listEstates,id_search)
 def removeCookieWindow():
     boringCookieButton = driver.find_element(By.XPATH,XpathAnd("inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed bg-highlight text-white hover:bg-highlight/90 focus-visible:bg-highlight/80 disabled:bg-gray-300 text-md h-7 border-0 px-2 py-1"))
     boringCookieButton.click()
@@ -167,8 +207,24 @@ def clickNextPage():
             return True
     return False        
 
-def runAndScrapeWebSite():
+def insertSearchInDatabase():
+    conn = pymysql.connect(host = "localhost", user="root", password="Laptop1*", database="properties" )
 
+    title = TITLE
+    description = DESCRIPTION
+    cursor = conn.cursor()
+    query = "INSERT INTO properties.search(price_min,price_max,square_min,Square_max,date,title,description) VALUES(%s,%s,%s,%s,CURDATE(),%s,%s)"
+    values = (MinPrice,MaxPrice,MinSquare,MaxSquare,title,description)
+    cursor.execute(query,values)
+    conn.commit()
+    id = cursor.lastrowid
+    conn.close()
+    return id
+    
+
+
+
+def runAndScrapeWebSite(id_search):
     repeatUntilSuccess(writeTown_Input,[])
     time.sleep(3)
     dropdown = repeatUntilSuccess(findDropDownMenuForTown_Input,[])
@@ -179,11 +235,26 @@ def runAndScrapeWebSite():
     repeatUntilSuccess(searchClick_Input,[])
 
     variable = True
-    while variable:
-        time.sleep(5)
-        pickUpAllProperties()
-        variable = repeatUntilSuccess(clickNextPage,[])
-            
-runAndScrapeWebSite()
 
-driver.quit()
+    page = 0
+    while variable and page<PAGES:
+        time.sleep(5)
+        repeatUntilSuccess(pickUpAllProperties,[id_search])
+        variable = repeatUntilSuccess(clickNextPage,[])
+    
+    return id_search
+
+def getSearch():
+    id_search = repeatUntilSuccess(insertSearchInDatabase,[])
+    return id_search
+
+def run():
+    id_search = getSearch()
+    try:
+        runAndScrapeWebSite(id_search)
+        driver.quit()
+    except Exception as e: 
+        print(f"An error occurred: {e}")
+        print("PROCESS IS GOING ON")
+        driver.quit()
+    zidProcessData(id_search)

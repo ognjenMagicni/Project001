@@ -17,17 +17,17 @@ class Interface extends React.Component{
     }
 
     getListSearch = async () => {
-        let res = await axios.get("http://localhost:5000/getAllSearches/")
+        let res = await axios.get("http://localhost:8000/getAllSearches")
         this.setState({listSearch:res.data})
     }
 
     getTypeList = async () => {
-        let types = await axios.get("http://localhost:5000/getTypes/")
+        let types = await axios.get("http://localhost:8000/getTypes/")
         this.setState({typeList:types.data})
     }
 
     getLocationList = async () => {
-        let locations = await axios.get("http://localhost:5000/getLocations/")
+        let locations = await axios.get("http://localhost:8000/getLocations/")
         this.setState({locationList:locations.data})
     }
 
@@ -52,7 +52,7 @@ class Interface extends React.Component{
     }
 
     runProgram = async () => {
-        let res = await axios.post("http://localhost:5000/runProgram/",
+        let res = await axios.post("http://localhost:8000/runProgram/",
             this.state.inputFields)
     }
 

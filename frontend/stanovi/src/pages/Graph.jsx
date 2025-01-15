@@ -16,9 +16,9 @@ class Graph extends React.Component{
         let url = window.location.href
         let tokens = url.split("/")
         let id = tokens[tokens.length-1]
-        let id_search = await axios.get(`http://localhost:5000/getAllProperties/${id}`)
+        let id_search = await axios.get(`http://localhost:8000/getAllProperties/${id}`)
 
-        let id_property = await axios.get(`http://localhost:5000/getSearch/${id}`)
+        let id_property = await axios.get(`http://localhost:8000/getSearch/${id}`)
         this.setState({listProperties:id_search.data,minPrice:id_property.data[0][3],maxPrice:id_property.data[0][4],minSquare:id_property.data[0][5],maxSquare:id_property.data[0][6]})
         
         this.setState({squareList:this.getRangeForSquare(5,id_property.data[0][6],id_property.data[0][5])})

@@ -6,6 +6,13 @@ import reportWebVitals from './reportWebVitals';
 import {BrowserRouter,Routes,Route} from "react-router-dom"
 import Interface from "./pages/Interface.jsx"
 import Graph from "./pages/Graph.jsx"
+import Menu from "./pages/Menu.jsx"
+import Analytics from './pages/Analytics.jsx';
+import Compare from './pages/Compare.jsx';  
+import Search from './pages/Search.jsx';
+import List from './pages/List.jsx';
+import Properties from './pages/Properties.jsx';
+
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -14,12 +21,15 @@ root.render(
       <Routes>
         <Route path="/homepage" element={<Interface/>}></Route>
         <Route path="/graph/:id" element={<Graph/>}></Route>
+        <Route path="/menu" element={<Menu/>}></Route>
+        <Route path="/analytics/:id_search" element={<Analytics/>}></Route>
+        <Route path="/compare" element={<Compare/>}></Route>
+        <Route path="/search" element={<Search/>}></Route>
+        <Route path="/list" element={<List/>}></Route>
+        <Route path="/properties" element={<Properties/>}></Route>
       </Routes>
     </BrowserRouter>
   </div>
 );
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();

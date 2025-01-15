@@ -1,0 +1,72 @@
+/* List.css */
+.list-container {
+    padding: 80px;
+    font-family: Arial, sans-serif;
+    background-color: #f9f9f9;
+    min-height: 100vh;
+  }
+  
+  .list-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: white;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  .list-table-header {
+    background-color: #007BFF;
+    font-weight: bold;
+  }
+  
+  .list-table-row {
+    border: 1px solid #ddd;
+  }
+  
+  .list-table-row:nth-child(even) {
+    background-color: #f2f2f2;
+  }
+  
+  .list-table-row:hover {
+    background-color: #e6f7ff;
+  }
+  
+  .list-table-cell {
+    padding: 10px;
+    text-align: left;
+    border: 1px solid #ddd;
+  }
+  
+  .list-table-cell-buttons {
+    padding: 10px;
+    text-align: left;
+    border: 1px solid #ddd;
+    display:flex;
+  }
+
+  .action-button {
+    padding: 5px 10px;
+    margin: 0 5px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  
+  .action-button:hover {
+    opacity: 0.9;
+  }
+  
+  .action-open {
+    background-color: #28a745;
+    color: white;
+  }
+  
+  .action-delete {
+    background-color: #dc3545;
+    color: white;
+  }
+  
+  .action-buy {
+    background-color: #ffc107;
+    color: black;
+  }
