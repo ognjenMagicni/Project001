@@ -1,5 +1,5 @@
 import sys
-sys.path.insert(0,r'C:\Users\Asus\Desktop\Ognjen\Programiranje\Python\Skripte\biblioteke')
+sys.path.insert(0,r'C:\Users\Asus\Desktop\Ognjen\Programiranje\Stanovi\python\Project001\libraries')
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
