@@ -1,5 +1,5 @@
 import sys
-sys.path.insert(0,r'C:\Users\Asus\Desktop\Ognjen\Programiranje\Stanovi\python\Project001\libraries') 
+sys.path.insert(0,'../libraries')
 
 from scrap import Init, By
 import time

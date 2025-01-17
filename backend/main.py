@@ -1,12 +1,12 @@
 import sys
-sys.path.insert(0,r'C:\Users\Asus\Desktop\Ognjen\Programiranje\Stanovi\python\Project001\libraries')
+sys.path.insert(0,'../libraries')
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from mysqlwrapper import selectBackend,updateBackend
 import pymysqlpool
 
-config={'host':'localhost', 'user':'root', 'password':'Laptop1*', 'database':'properties', 'autocommit':True}
+config={'host':'localhost', 'user':'root', 'password':'root', 'database':'properties', 'autocommit':True}
 pool = pymysqlpool.ConnectionPool(size=2, maxsize=15, pre_create_num=2, name='pool1', **config)
 
 app = FastAPI()
