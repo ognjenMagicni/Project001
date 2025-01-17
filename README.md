@@ -7,20 +7,20 @@ Backend workflow
 
 ##Set the project
 You need Node.js, MySql Workbench, MySql
-git init
-git clone git@github.com:ognjenMagicni/Project001.git
-git pull origin main
-cd backend
-pip3 install -r requirements.txt
-cd ..
-cd frontend/stanovi/
-npm config set legacy-peer-deps true
-npm install
+git init   
+git clone git@github.com:ognjenMagicni/Project001.git   
+git pull origin main   
+cd backend   
+pip3 install -r requirements.txt   
+cd ..   
+cd frontend/stanovi/  
+npm config set legacy-peer-deps true  
+npm install  
 
-Download database backup
-Create new schema "properties"
-Import backups in "properties"
+Download database backup  
+Create new schema "properties"  
+Import backups in "properties"  
 
-npm start
-cd ..
-fastapi dev main.py
+npm start  
+cd ..  
+fastapi dev main.py  
