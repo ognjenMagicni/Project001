@@ -1,0 +1,109 @@
+/* FilterForm.css */
+
+/* General form styling */
+.filter-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    width: 100%;
+    max-width: 400px;
+    margin: 2rem auto;
+    padding: 1.5rem;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Form group styling */
+  .form-group {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .form-group label {
+    font-size: 0.9rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    color: #333;
+  }
+  
+  .form-group input {
+    padding: 0.6rem;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    transition: border-color 0.3s ease;
+  }
+  
+  .form-group input:focus {
+    border-color: #007bff;
+    outline: none;
+  }
+  
+  /* Summary section styling */
+  .summary {
+    padding: 1rem;
+    background-color: #eef9ff;
+    border: 1px solid #cce5ff;
+    border-radius: 6px;
+  }
+  
+  .summary h3 {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-bottom: 0.8rem;
+    color: #0056b3;
+  }
+  
+  .summary p {
+    margin: 0.3rem 0;
+    font-size: 0.9rem;
+    color: #333;
+  }
+  
+  /* Submit button styling */
+  .submit-button {
+    padding: 0.8rem;
+    font-size: 1rem;
+    font-weight: bold;
+    color: #fff;
+    background-color: #007bff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .submit-button:hover {
+    background-color: #0056b3;
+  }
+  
+  /* Responsive design */
+  @media (max-width: 600px) {
+    .filter-form {
+      padding: 1rem;
+      width: 90%;
+    }
+  
+    .form-group label {
+      font-size: 0.85rem;
+    }
+  
+    .form-group input {
+      font-size: 0.9rem;
+    }
+  
+    .summary h3 {
+      font-size: 1rem;
+    }
+  
+    .summary p {
+      font-size: 0.85rem;
+    }
+  
+    .submit-button {
+      font-size: 0.9rem;
+    }
+  }
+  

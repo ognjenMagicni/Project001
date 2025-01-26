@@ -12,6 +12,7 @@ import Compare from './pages/Compare.jsx';
 import Search from './pages/Search.jsx';
 import List from './pages/List.jsx';
 import Properties from './pages/Properties.jsx';
+import Filter from './pages/Filter.jsx'
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -27,6 +28,7 @@ root.render(
         <Route path="/search" element={<Search/>}></Route>
         <Route path="/list" element={<List/>}></Route>
         <Route path="/properties" element={<Properties/>}></Route>
+        <Route path="/filter/:id" element={<Filter/>}></Route>
       </Routes>
     </BrowserRouter>
   </div>
