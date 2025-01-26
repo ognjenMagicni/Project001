@@ -1,5 +1,5 @@
 import sys
-sys.path.insert(0,'../libraries')
+sys.path.insert(0,'libraries')
 
 from scrap import Init, By
 import time
@@ -7,6 +7,9 @@ from graph import drawGraph
 import pymysql
 import json
 from process import realiticaProcessData
+import time
+import pymysqlpool
+from mysqlwrapper import insertBackend
 
 ###CONSTANTS
 global undefined
@@ -92,6 +95,7 @@ def functionCityFilter(cityFilter):
 def functionPriceFilter(minPrice,maxPrice):
     priceButton = driver.find_element(By.ID,"price-label")
     action.click(priceButton).perform()
+    time.sleep(1)
 
     priceInputs = driver.find_element(By.CLASS_NAME,"inner ").find_elements(By.TAG_NAME,"input")
     priceInputs[0].send_keys(str(minPrice))
@@ -111,6 +115,7 @@ def functionProperyFilter(propertyFilter):
 def clickSearch():
     button = driver.find_element(By.TAG_NAME,"button")
     action.click(button).perform()
+    time.sleep(1)
 
 def upgradeConfiguration(priceList):
     global minPriceLog
@@ -165,6 +170,10 @@ def setRightLocationCityCountry(location,city,country):
         location = None
     return location,city,country
 
+def upgradeConfigurationLocation(locationList):
+    location,city, country = setRightLocationCityCountry(locationList[0],locationList[1],locationList[2])
+    return [location,city,country]
+
 def preprocessSearchInformation(propertyInfoList):
 
     Rooms = propertyInfoList[0][0]
@@ -200,7 +209,7 @@ def gatherProperties():
     div = driver.find_element(By.ID,"left_column_holder")
     all = div.find_elements(By.TAG_NAME,"div")
     
-    file = open(fileJSONL,'a',encoding='utf-8')
+    #file = open(fileJSONL,'a',encoding='utf-8')
 
     while True:
         
@@ -225,15 +234,16 @@ def gatherProperties():
         priceList,locationList = getSpecificInfoProperty(price,location)
 
         upgradeConfiguration(priceList)
+        locationList = upgradeConfigurationLocation(locationList)
 
         globalPropertyInfo.append([priceList,locationList,link])
 
-        proccesAndJsonl([priceList,locationList,link],file)
+        #proccesAndJsonl([priceList,locationList,link],file)
 
         startingDiv+=addDiv
         if startingDiv >83:
             break
-    file.close()
+    #file.close()
 
 def nextPage():
     orientationButtons = driver.find_elements(By.CLASS_NAME,"bt_pages")
@@ -262,51 +272,52 @@ def runWebScrape(id_search):
 
 
     try:
-        conn = pymysql.connect(host = "localhost", user="root", password="Laptop1*", database="properties" )
+        pool = pymysqlpool.ConnectionPool(host = "localhost", user="root", password="simple", database="properties")
     
         global title
         global description
-        cursor = conn.cursor()
+        #cursor = conn.cursor()
 
         for property in globalPropertyInfo:
             if property[0][2]<10 and property[0][2]>450:
                 continue
             query = "INSERT INTO properties.property(fk_search,no_room,square,price,location,city,country,link,on_off,square_price) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
             values = (id_search,property[0][0],property[0][1],property[0][2],property[1][0],property[1][1],property[1][2],property[2],1,property[0][2]/property[0][1] if property[0][1]!=None else None)
-            cursor.execute(query,values)
-            conn.commit()
-
+            insertBackend(pool,query,values)
+            #cursor.execute(query,values)
+            #conn.commit()
+        
     except pymysql.MySQLError as e:
         print(f"Error: {e}")
-        conn.rollback()
 
-    print(len(globalPropertyInfo))
-    print(globalPropertyInfo)
+    print(f'Scrape was successful with {len(globalPropertyInfo)} real estates gathered')
     #drawGraph(globalPropertyInfo)
 
     #time.sleep(1000) 
     driver.quit()
 
 def getSearch():
-    conn = pymysql.connect(host = "localhost", user="root", password="Laptop1*", database="properties" )
-    
+    pool = pymysqlpool.ConnectionPool(host = 'localhost', user='root', password='simple', database='properties')
+                
     global title
     global description
-    cursor = conn.cursor()
+    #cursor = conn.cursor()
     query = "INSERT INTO properties.search(price_min,price_max,square_min,Square_max,date,title,description) VALUES(%s,%s,%s,%s,CURDATE(),%s,%s)"
     values = (minPriceLog,maxPriceLog,minSquareLog,maxSquareLog,title,description)
-    cursor.execute(query,values)
-    conn.commit()
-    id = cursor.lastrowid
+    #cursor.execute(query,values)
+    #conn.commit()
+    id = insertBackend(pool,query,values)
+    
     return id
 
 def run():
     try:
         id_search = getSearch()
+        print(id_search)
         runWebScrape(id_search)
         driver.quit()
     except Exception as e: 
-        print(f"An error occurred: {e}")
+        print(f"An error occurred in realitica.py in function run: {e}")
         print("PROCESS IS GOING ON")
         driver.quit()
     realiticaProcessData(id_search)

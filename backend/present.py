@@ -1,5 +1,5 @@
 import sys
-sys.path.insert(0,'../libraries')
+sys.path.insert(0,'libraries')
 
 import pandas as pd
 from matplotlib import pyplot as plt
@@ -8,7 +8,7 @@ import seaborn as sns
 from mysqlwrapper import selectQuery
 
 #51 je novi sad, 47 je pg, 56 je bg
-path = 'C:/Users/Asus/Desktop/Ognjen/Programiranje/Stanovi/python/Project001/frontend/stanovi/public/'
+path = '../frontend/stanovi/public/'
 def extractDataFromPropertyTable(search_id):
     query = "SELECT * FROM properties.property WHERE fk_search = %s"
     values = (search_id,)
@@ -184,7 +184,6 @@ def distributionOfSquarePriceBasedOnSquareMetresCompare(df1,df2,range = (0,5000,
         plt.xlabel('Square price')
         plt.ylabel('Quantity')
         plt.legend()
-        i+=1
         if i==7:
             plt.subplots_adjust(left=0.1,
                             bottom=0.1, 
@@ -192,14 +191,77 @@ def distributionOfSquarePriceBasedOnSquareMetresCompare(df1,df2,range = (0,5000,
                             top=0.9,
                             wspace=0.4, 
                             hspace=0.4)
-            #plt.savefig(path+'distributionOfSquarePriceBasedOnSquareMetresCompare.png',dpi=300)
-            plt.show()
-            plt.figure()
+            plt.savefig(path+'distributionOfSquarePriceBasedOnSquareMetresCompare.png',dpi=300)
+            #plt.show()
             i=1
-        
+        i+=1
+
+def ratioFullPriceSquareCompare(df1,df2,squareMetrePriceLine = False,fullPriceLine = False,locationList = None,priceRange = (0,300000),squareRange=(0,100)):
+    plt.figure(figsize=(10,6))
+    df1 = df1.loc[ (df1['full price']>priceRange[0]) & (df1['full price']<priceRange[1]) & (df1['square metres']>squareRange[0]) & (df1['square metres']<squareRange[1]) ]
+    df1.reset_index(drop=True,inplace=True)
+    df2 = df2.loc[ (df2['full price']>priceRange[0]) & (df2['full price']<priceRange[1]) & (df2['square metres']>squareRange[0]) & (df2['square metres']<squareRange[1]) ]
+    df2.reset_index(drop=True,inplace=True)
+    city1, country1 = df1.loc[0,'city'],df1.loc[0,'country']
+    city2, country2 = df2.loc[0,'city'],df2.loc[0,'country']
+
+    x = np.arange(0,300,10)
+    y = np.arange(0,300000,10000)
+    y2 = np.arange(0,600000,20000)
+    y3 = np.arange(0,900000,30000)
+
+    label = True
+    for (index1, row1), (index2, row2) in zip(df1.iterrows(), df2.iterrows()):
+        if label:
+            plt.scatter(row1['square metres'], row1['full price'], color='blue', label=city1+", "+country1, alpha=0.2)
+            plt.scatter(row2['square metres'], row2['full price'], color='red', label=city2+", "+country2, alpha=0.2)
+            label = False
+        plt.scatter(row1['square metres'], row1['full price'], color='blue', alpha=0.2)
+        plt.scatter(row2['square metres'], row2['full price'], color='red', alpha=0.2)
+
+    if squareMetrePriceLine:
+        plt.plot(x,y,color='green',label='1000 epsq')
+        plt.plot(x,y2,color='brown',label='2000 epsq')
+        plt.plot(x,y3,color='red',label='3000 epsq')
+
+    if fullPriceLine:
+        fullPriceList = [50000,100000,150000,200000,250000,300000]
+        for price in fullPriceList:
+            plt.plot(np.arange(0,300,10),[price]*30,color='black')
+
+    plt.title('Distribution of full and square price')
+    plt.legend()
+
+    plt.xlim(squareRange[0],squareRange[1])
+    plt.ylim(priceRange[0],priceRange[1])
+    plt.savefig(path+'fullAndSquarePriceCompare.png',dpi=300)
+    #plt.show()
+
+
+def distributionOfSquarePricesCompare(df1, df2):
+    prices1 = df1['square price']
+    prices2 = df2['square price']
+
+    city1, country1 = df1.loc[0,'city'],df1.loc[0,'country']
+    city2, country2 = df2.loc[0,'city'],df2.loc[0,'country']
+    
+    bins = np.arange(0, 5000, 250)
+    
+    plt.figure(figsize=(10, 6))
+    plt.hist(prices1, bins, alpha=0.5, color='blue',density=True, label=f"{city1}, {country1}", edgecolor='black')
+    plt.hist(prices2, bins, alpha=0.5, color='red',density=True, label=f"{city2}, {country2}", edgecolor='black')
+    
+    plt.title('Distribution of Square Prices', fontsize=16)
+    plt.xlabel('Square Price', fontsize=14)
+    plt.ylabel('Quantity', fontsize=14)
+    plt.legend(fontsize=12)
+    plt.savefig(path+'distributionOfSquarePricesCompare.png',dpi=300)
+    
+    #plt.show()
 #print(df.describe())
 
 #print(df.loc[ df['Square metres']>250 ])
+
 
 def run(id_search):
     df = convertToDataFrame(id_search)
@@ -213,17 +275,24 @@ def run(id_search):
 def runCompare(id_search1, id_search2):
     df1 = convertToDataFrame(id_search1)
     df1 = df1.loc[ df1['square metres']>10 ]
+    df1 = df1.loc[ df1['square metres']<500 ]
     df1.reset_index(drop=True,inplace=True)
 
     df2 = convertToDataFrame(id_search2)
     df2 = df2.loc[ df2['square metres']>10 ]
+    df2 = df2.loc[ df2['square metres']<500 ]
     df2.reset_index(drop=True,inplace=True)
 
+    distributionOfSquarePricesCompare(df1,df2)
     distributionOfSquarePriceBasedOnSquareMetresCompare(df1,df2)
-    
+    ratioFullPriceSquareCompare(df1,df2,squareMetrePriceLine=True)
 
-runCompare(51,47)
+import sys
 
-"""import sys
-run(int(sys.argv[1]))"""
+if __name__ == "__main__":
+    # Check the number of arguments
+    if len(sys.argv) == 2:  # One argument
+        run(int(sys.argv[1]))
+    elif len(sys.argv) == 3:  # Two arguments
+        runCompare(int(sys.argv[1]), int(sys.argv[2]))
 

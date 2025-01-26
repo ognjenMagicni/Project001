@@ -1,41 +1,48 @@
 import plotly.express as px
 import plotly.graph_objects as go
+from present import extractDataFromPropertyTable, convertToDataFrame
 
-def drawGraph(propertyInfo):
-    x = [0,1]
-    y = [0,1000]
-    fig_1000 = px.line(x = x, y = y)
+def drawGraph1(propertyInfo):
 
-    x = [0,1]
-    y = [0,1500]
-    fig_1500 = px.line(x = x, y = y)
+    x_values = propertyInfo['square metres'].tolist()
+    y_values = propertyInfo['full price'].tolist()
+    urls = propertyInfo['link'].tolist()
 
-    x = [0,1]
-    y = [0,2000]
-    fig_2000 = px.line(x = x, y = y)
+    # Create hover text with clickable links
+    hover_text = [f'<a href="{url}" target="_blank">.</a>' for url in urls]
 
-    x = []
-    y = []
-    link = []
-    color = []
+    # Create a scatter plot
+    fig = go.Figure(
+        data=go.Scatter(
+            x=x_values,
+            y=y_values,
+            mode="markers",
+            text=hover_text,
+            hovertemplate="%{text}<extra></extra>",  # Display the clickable link in hover
+        )
+    )
 
-    for property in propertyInfo:
-        x.append(property[0][1])
-        y.append(property[0][2])
-        link.append(property[2])
-        color.append(property[1][0])
+    # Update the layout
+    fig.update_layout(
+        title="Scatter Plot with Clickable Dots",
+        xaxis_title="X Axis",
+        yaxis_title="Y Axis",
+    )
 
-    fig = px.scatter(x = x, y = y, color = color,text = [f"<a href='{link[i]}' target='_blank'>.</a>" for i in range(len(link))])
-    
-    fig_final = go.Figure()
+    # Show the plot
+    fig.show()
 
-    for trace in fig_1000:
-        fig_final.add_trace(trace)
-    for trace in fig_1500:
-        fig_final.add_trace(trace)
-    for trace in fig_2000:
-        fig_final.add_trace(trace)
-    for trace in fig:
-        fig_final.add_trace(trace)
 
-    fig_final.show()
+def run(id_search,minPrice,maxPrice,minSquareMetres,maxSquareMetres,minSquarePrice,maxSquarePrice):
+    df = convertToDataFrame(id_search)
+    df = df.loc[
+        (df['full price'] > minPrice) & (df['full price'] < maxPrice) &
+        (df['square price'] > minSquarePrice) & (df['square price'] < maxSquarePrice) &
+        (df['square metres'] > minSquareMetres) & (df['square metres'] < maxSquareMetres)
+    ]
+    drawGraph1(df)
+
+#run(68,50,1000000,10,500,50,10000)
+import sys
+if __name__ == "__main__":
+    run(int(sys.argv[1]),int(sys.argv[2]),int(sys.argv[3]),int(sys.argv[4]),int(sys.argv[5]),int(sys.argv[6]),int(sys.argv[7]) )

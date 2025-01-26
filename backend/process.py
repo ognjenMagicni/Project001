@@ -1,5 +1,5 @@
 import sys
-sys.path.insert(0,'../libraries')
+sys.path.insert(0,'libraries')
 
 import json
 import pandas as pd
@@ -188,7 +188,7 @@ def realiticaCorrectionOfSquarePrice(driver,item,conn,moreThanOneMatches,didNotD
     
 
 def extractIncorrectSquarePriceProperty(search_id):
-    conn = pymysql.connect(host = "localhost", user="root", password="Laptop1*", database="properties" )
+    conn = pymysql.connect(host = "localhost", user="root", password="simple", database="properties" )
     cursor = conn.cursor()
     query = "SELECT * FROM properties.property WHERE (square_price < 0 or square_price IS NULL) and fk_search = %s"
     values = (search_id,)
@@ -205,7 +205,7 @@ def realiticaProcessData(id_search):
     properties = extractIncorrectSquarePriceProperty(id_search)
     
     driver, action = Init('https://www.realitica.com')
-    conn = pymysql.connect(host = "localhost", user="root", password="Laptop1*", database="properties" )
+    conn = pymysql.connect(host = "localhost", user="root", password="simple", database="properties" )
 
     numberOfProperties = len(properties)
     for index,item in enumerate(properties):

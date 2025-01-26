@@ -1,5 +1,5 @@
 import sys
-sys.path.insert(0,'../libraries')
+sys.path.insert(0,'libraries')
 
 import scrap
 from scrap import By,XpathAnd,repeatUntilSuccess
@@ -153,7 +153,7 @@ def writeDataJSONL_Process(data,file):
     
 def writeDatabase(listEstates,id_search):
     pass
-    conn = pymysql.connect(host = "localhost", user="root", password="Laptop1*", database="properties" )
+    conn = pymysql.connect(host = "localhost", user="root", password="simple", database="properties" )
 
     try:
         cursor = conn.cursor()
@@ -172,12 +172,12 @@ def writeDatabase(listEstates,id_search):
                 conn.commit()
 
     except pymysql.MySQLError as e:
-        print(f"Error: {e}")
+        print(f"Error in fourZid in writeDatabase: {e}")
         conn.rollback()
 
 
 def pickUpAllProperties(id_search):
-    file = open(jsonFile,'a',encoding='utf-8')
+    #file = open(jsonFile,'a',encoding='utf-8')
     estates = driver.find_elements(By.XPATH,XpathAnd("flex w-2/3 flex-col justify-between py-2"))
     
     listEstates = []
@@ -188,7 +188,7 @@ def pickUpAllProperties(id_search):
         
         estate = preprocessSearchInformation_Process(p,a)
         listEstates.append(estate)
-        writeDataJSONL_Process(estate,file)
+        #writeDataJSONL_Process(estate,file)
 
     writeDatabase(listEstates,id_search)
 def removeCookieWindow():
@@ -208,7 +208,7 @@ def clickNextPage():
     return False        
 
 def insertSearchInDatabase():
-    conn = pymysql.connect(host = "localhost", user="root", password="Laptop1*", database="properties" )
+    conn = pymysql.connect(host = "localhost", user="root", password="simple", database="properties" )
 
     title = TITLE
     description = DESCRIPTION
@@ -254,7 +254,7 @@ def run():
         runAndScrapeWebSite(id_search)
         driver.quit()
     except Exception as e: 
-        print(f"An error occurred: {e}")
+        print(f"An error occurred in fourZid in run: {e}")
         print("PROCESS IS GOING ON")
         driver.quit()
     zidProcessData(id_search)

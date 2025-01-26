@@ -1,12 +1,12 @@
 import sys
-sys.path.insert(0,'../libraries')
+sys.path.insert(0,'libraries')
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from mysqlwrapper import selectBackend,updateBackend
 import pymysqlpool
 
-config={'host':'localhost', 'user':'root', 'password':'root', 'database':'properties', 'autocommit':True}
+config={'host':'localhost', 'user':'root', 'password':'simple', 'database':'properties', 'autocommit':True}
 pool = pymysqlpool.ConnectionPool(size=2, maxsize=15, pre_create_num=2, name='pool1', **config)
 
 app = FastAPI()
@@ -125,6 +125,34 @@ def getAnalytics(id_search:int):
     
     subprocess.run(["python", script_name] + arguments)
 
+@app.get("/getAnalyticsCompare/{id_search1}/{id_search2}")
+def getAnalyticsCompare(id_search1:int,id_search2:int):
+    import subprocess
+
+    script_name = "present.py"
+    arguments = [str(id_search1),str(id_search2)]
+
+    
+    subprocess.run(["python", script_name] + arguments)
+
+from pydantic import BaseModel
+class Graph(BaseModel):
+    id_search:int
+    minPrice:int
+    maxPrice:int
+    minSquareMetres:int
+    maxSquareMetres:int
+    minSquarePrices:int
+    maxSquarePrices:int
+
+@app.post("/runGraph")
+def runGraph(graph: Graph):
+    import subprocess
+
+    script_name = "graph.py"
+    arguments = [str(graph.id_search),str(graph.minPrice),str(graph.maxPrice),str(graph.minSquareMetres),str(graph.maxSquareMetres),str(graph.minSquarePrices),str(graph.maxSquarePrices)]
+
+    subprocess.run(["python", script_name] + arguments)
 
 
     
