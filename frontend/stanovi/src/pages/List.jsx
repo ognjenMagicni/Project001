@@ -64,7 +64,7 @@ class List extends React.Component {
                                 <td className="list-table-cell-buttons">
                                     <Link to={`/analytics/${row[0]}`}><button className="action-button action-open"onClick={() => this.handleOpen(row[0])}>Open</button></Link>
                                     <ConfirmDialog id_search = {row[0]}></ConfirmDialog>
-                                    <button className="action-button action-buy" onClick={() => this.handleBuy(row[0])}>Buy</button>
+                                    <Link to={`/filter/${row[0]}`}><button className="action-button action-buy">Buy</button></Link>
                                 </td>
                             </tr>
                             )
