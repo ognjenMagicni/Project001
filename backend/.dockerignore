@@ -1,0 +1,4 @@
+project001venv
+__pycache__
+.gitignore
+serverToDB.py

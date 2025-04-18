@@ -3,7 +3,6 @@ sys.path.insert(0,'libraries')
 
 from scrap import Init, By
 import time
-from graph import drawGraph
 import pymysql
 import json
 from process import realiticaProcessData

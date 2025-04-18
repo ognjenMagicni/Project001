@@ -265,7 +265,7 @@ def distributionOfSquarePricesCompare(df1, df2):
 
 def run(id_search):
     df = convertToDataFrame(id_search)
-    df = df.loc[ df['square metres']>10 ]
+    df = df.loc[ (df['square metres']>10) & (df['full price']>5000)]
     ratioFullPriceSquare(df,squareMetrePriceLine=True)
     histogramOfLocations(df)
     distibutionOfSquarePrices(df)

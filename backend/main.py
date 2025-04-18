@@ -74,6 +74,7 @@ class SubmitObject(BaseModel):
 
 @app.post("/runProgram/")
 def runProgram(submitObject: SubmitObject):
+    print("Run program is runned")
     city, country = submitObject.location.strip().split(",")
     submitObject.location = city
     if country==' Montenegro':
@@ -147,7 +148,7 @@ class Graph(BaseModel):
 
 @app.post("/runGraph")
 def runGraph(graph: Graph):
-    import subprocess
+    import subprocess 
 
     script_name = "graph.py"
     arguments = [str(graph.id_search),str(graph.minPrice),str(graph.maxPrice),str(graph.minSquareMetres),str(graph.maxSquareMetres),str(graph.minSquarePrices),str(graph.maxSquarePrices)]

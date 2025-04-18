@@ -1,0 +1,23 @@
+services:
+  backend:
+    image: real-estate
+    ports: 
+      - 8000:8000
+    volumes: 
+      - ./backend/:/app
+  frontend:
+    image: real-estate-frontend
+    ports:
+      - 3000:3000
+    volumes:
+      - ./frontend/stanovi/:/app
+  mysql:
+    image: mysql
+    volumes: 
+      - real-estate-volume-2:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    environment:
+      MYSQL_ROOT_PASSWORD: secret
+
+volumes:
+  real-estate-volume-2: {}
