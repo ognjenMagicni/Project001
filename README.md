@@ -11,9 +11,6 @@ Application scrapes data for real estates in Montenegro and Serbia, stores data 
 ![Screenshot from 2025-04-24 17-07-27](https://github.com/user-attachments/assets/c78ed7df-4a85-48f5-9fe8-b45dee1269e5)
 ![Screenshot from 2025-04-24 17-06-55](https://github.com/user-attachments/assets/4784e44d-c50c-45b2-8fdf-56b0603e641b)
 
-
-
-
 ## Set the project
 You need Node.js, MySql Workbench, MySql, Pyhon
 
