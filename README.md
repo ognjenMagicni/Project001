@@ -16,11 +16,11 @@ You need Node.js, MySql Workbench, MySql, Pyhon
 
 
 ### Cloning Git project
-
+```
 git init   
 git clone git@github.com:ognjenMagicni/Project001.git   
 git pull origin main   
-
+```
 ### Setting database
 
 Open MySQL Workbench
@@ -32,25 +32,31 @@ Click Start Import
 ### Setting backend
 
 For Linux:
+```
 cd backend
 python3 -m venv venv_p
 source venv_p/bin/activate
 pip3 install -r requirements.txt  
-fastapi dev main.py  
+fastapi dev main.py
+```
 
 For Windows:
+```
 cd backend
 python -m venv venv_p
 venv_p/Scripts/activate
 pip install -r requirements.txt  
-fastapi dev main.py  
+fastapi dev main.py
+```
 
 ### Setting frontend
 
 Open new terminal
+```
 cd frontend/stanovi/  
 npm install  
 npm start
+```
 
 ### Important
 You have to go to
